@@ -1,26 +1,22 @@
 package com.example.linjiaxin.twtnews;
 
-import android.os.Handler;
-import android.os.Message;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,36 +24,31 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * Created by linjiaxin on 2017/11/13.
+ */
 
-    private DrawerLayout myDrawerLayout;
+public class MyFragment extends Fragment {
+
     private List<NewsBean> newsList = new ArrayList<>();
     private NewsAdapter newsAdapter;
     private String url="http://open.twtstudio.com/api/v1/news/1/page/1";
-
+    public static final String ARG_OBJECT="object";
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState){
+        View view = inflater.inflate(R.layout.fragment,container,false);
+        Bundle bundle = getArguments();
+        int data = bundle.getInt(ARG_OBJECT);
+        url="http://open.twtstudio.com/api/v1/news/"+data+"/page/1";
         Log.d("Data", "onCreate");
-        myDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         sendRequestWithOKHttp(url);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
         recyclerView.setLayoutManager(layoutManager);
         newsAdapter = new NewsAdapter(newsList);
         recyclerView.setAdapter(newsAdapter);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case android.R.id.home:
-                myDrawerLayout.openDrawer(GravityCompat.START);
-                break;
-            default:
-        }
-        return true;
+        return view;
     }
 
     private void sendRequestWithOKHttp(final String url) {
@@ -102,5 +93,4 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 }
